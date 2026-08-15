@@ -1,0 +1,11 @@
+com\ta\bn220\infrastructure\controller\GpsController$GpsResponse.class
+com\ta\bn220\infrastructure\database\GpsJpaRepository.class
+com\ta\bn220\domain\repository\GpsDataRepository.class
+com\ta\bn220\infrastructure\database\GpsJpaEntity.class
+com\ta\bn220\domain\model\Coordinates.class
+com\ta\bn220\Bn220ServiceApplication.class
+com\ta\bn220\infrastructure\controller\GpsController.class
+com\ta\bn220\infrastructure\database\GpsDataRepositoryImpl.class
+com\ta\bn220\infrastructure\controller\GpsController$GpsRequest.class
+com\ta\bn220\domain\model\GpsData.class
+com\ta\bn220\application\service\GpsApplicationService.class

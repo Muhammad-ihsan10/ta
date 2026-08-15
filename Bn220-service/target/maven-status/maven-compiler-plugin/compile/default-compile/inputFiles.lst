@@ -1,0 +1,9 @@
+C:\Semester6\TA\Bn220-service\src\main\java\com\ta\bn220\Bn220ServiceApplication.java
+C:\Semester6\TA\Bn220-service\src\main\java\com\ta\bn220\domain\repository\GpsDataRepository.java
+C:\Semester6\TA\Bn220-service\src\main\java\com\ta\bn220\infrastructure\database\GpsJpaRepository.java
+C:\Semester6\TA\Bn220-service\src\main\java\com\ta\bn220\domain\model\GpsData.java
+C:\Semester6\TA\Bn220-service\src\main\java\com\ta\bn220\infrastructure\controller\GpsController.java
+C:\Semester6\TA\Bn220-service\src\main\java\com\ta\bn220\domain\model\Coordinates.java
+C:\Semester6\TA\Bn220-service\src\main\java\com\ta\bn220\infrastructure\database\GpsJpaEntity.java
+C:\Semester6\TA\Bn220-service\src\main\java\com\ta\bn220\application\service\GpsApplicationService.java
+C:\Semester6\TA\Bn220-service\src\main\java\com\ta\bn220\infrastructure\database\GpsDataRepositoryImpl.java

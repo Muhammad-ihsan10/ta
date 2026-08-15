@@ -1,0 +1,41 @@
+ini untuk laravel
+php artisan serve --host=0.0.0.0 --port=8000
+
+
+-----------------------
+
+hidupin docker :
+docker-compose up -d 
+
+matikan docker :
+docker-compose stop
+
+liat status docker :
+docker-compose ps
+
+--------------------------
+
+1. Mengakses Laravel (Aplikasi Utama)
+Aplikasi Laravel dilayani oleh container frontend-nginx yang di-map ke port 80.
+
+URL: http://localhost atau http://127.0.0.1
+Keterangan: Karena menggunakan port standard 80, Anda tidak perlu mengetikkan nomor port di browser.
+
+2. Mengakses phpMyAdmin (Database Dashboard)
+Dashboard phpMyAdmin di-map ke port 8085.
+URL: http://localhost:8085 atau http://127.0.0.1:8085
+Kredensial Login (sesuai konfigurasi docker-compose):
+Server / Host: mysql-db (jika ditanyakan di form login)
+Username: root
+Password: root
+Informasi Tambahan (Service Lainnya)
+Eureka Server Dashboard: http://localhost:8761
+API Gateway: http://localhost:8080
+Mosquitto Broker (MQTT): berjalan di port 1883 (localhost:1883)
+12:39 AM
+
+
+============================
+1. gelang (tinggal di kalibrasiin logika MPU) -> fiks.
+2. 
+

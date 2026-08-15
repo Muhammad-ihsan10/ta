@@ -1,0 +1,11 @@
+node_modules
+vendor
+.env
+.git
+.gitignore
+.editorconfig
+docker-compose*
+Dockerfile
+.dockerignore
+npm-debug.log
+public/build

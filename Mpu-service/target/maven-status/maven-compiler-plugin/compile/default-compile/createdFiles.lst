@@ -1,0 +1,12 @@
+com\ta\mpu\domain\model\MpuData.class
+com\ta\mpu\domain\model\MovementStatus.class
+com\ta\mpu\infrastructure\database\MpuJpaRepository.class
+com\ta\mpu\infrastructure\controller\MpuController$MpuResponse.class
+com\ta\mpu\MpuServiceApplication.class
+com\ta\mpu\domain\repository\MpuDataRepository.class
+com\ta\mpu\domain\model\Acceleration.class
+com\ta\mpu\infrastructure\database\MpuJpaEntity.class
+com\ta\mpu\application\service\MpuApplicationService.class
+com\ta\mpu\infrastructure\controller\MpuController.class
+com\ta\mpu\infrastructure\controller\MpuController$MpuRequest.class
+com\ta\mpu\infrastructure\database\MpuDataRepositoryImpl.class

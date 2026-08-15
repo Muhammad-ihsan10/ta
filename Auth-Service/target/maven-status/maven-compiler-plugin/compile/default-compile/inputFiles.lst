@@ -1,0 +1,10 @@
+C:\Semester6\TA\Auth-Service\src\main\java\com\ta\auth\AuthServiceApplication.java
+C:\Semester6\TA\Auth-Service\src\main\java\com\ta\auth\model\User.java
+C:\Semester6\TA\Auth-Service\src\main\java\com\ta\auth\controller\AuthController.java
+C:\Semester6\TA\Auth-Service\src\main\java\com\ta\auth\service\AuthService.java
+C:\Semester6\TA\Auth-Service\src\main\java\com\ta\auth\repository\UserRepository.java
+C:\Semester6\TA\Auth-Service\src\main\java\com\ta\auth\util\JwtUtil.java
+C:\Semester6\TA\Auth-Service\src\main\java\com\ta\auth\dto\LoginResponse.java
+C:\Semester6\TA\Auth-Service\src\main\java\com\ta\auth\dto\RegisterRequest.java
+C:\Semester6\TA\Auth-Service\src\main\java\com\ta\auth\config\SecurityConfig.java
+C:\Semester6\TA\Auth-Service\src\main\java\com\ta\auth\dto\LoginRequest.java

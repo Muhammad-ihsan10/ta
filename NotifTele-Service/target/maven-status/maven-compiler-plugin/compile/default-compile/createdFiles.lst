@@ -1,0 +1,8 @@
+com\ta\notiftele\dto\NotifResponse.class
+com\ta\notiftele\service\TelegramNotifService.class
+com\ta\notiftele\config\TelegramConfig.class
+com\ta\notiftele\dto\FallAlertRequest$FallAlertRequestBuilder.class
+com\ta\notiftele\dto\NotifResponse$NotifResponseBuilder.class
+com\ta\notiftele\controller\NotifController.class
+com\ta\notiftele\dto\FallAlertRequest.class
+com\ta\notiftele\NotifTeleApplication.class

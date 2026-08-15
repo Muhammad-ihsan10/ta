@@ -1,0 +1,38 @@
+server:
+  port: 8086
+
+spring:
+  application:
+    name: notiftele-service
+  # Tidak butuh datasource — service ini stateless (tidak ada DB)
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+
+# Konfigurasi Telegram Bot
+telegram:
+  bot:
+    token: ${TELEGRAM_BOT_TOKEN:8646296898:AAFmoqkUKgBo-sHceRyS_krKtpZBqGbIgSg}
+    chat-id: ${TELEGRAM_CHAT_ID:}
+  notification:
+    # Cooldown antar notifikasi jatuh dalam detik (default 60 detik)
+    cooldown-seconds: ${TELEGRAM_COOLDOWN_SECONDS:60}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    preferIpAddress: true
+    instance-id: ${spring.application.name}:${server.port}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+logging:
+  level:
+    com.ta.notiftele: DEBUG

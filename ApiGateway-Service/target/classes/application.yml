@@ -1,0 +1,47 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+      routes:
+        - id: auth-service
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/api/auth/**
+
+        - id: gps-service
+          uri: lb://BN220-SERVICE
+          predicates:
+            - Path=/api/gps/**
+
+        - id: suhu-service
+          uri: lb://SUHU-TUBUH-SERVICE
+          predicates:
+            - Path=/api/suhu/**
+
+        - id: mpu-service
+          uri: lb://MPU-SERVICE
+          predicates:
+            - Path=/api/mpu/**
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    preferIpAddress: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
