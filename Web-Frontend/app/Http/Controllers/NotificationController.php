@@ -21,6 +21,7 @@ class NotificationController extends Controller
      */
     public function notifyFall(Request $request)
     {
+        session_write_close(); // Lepaskan session lock
         try {
             $response = Http::timeout(8)
                 ->post($this->gatewayUrl . '/api/notif/fall', [
@@ -52,6 +53,7 @@ class NotificationController extends Controller
      */
     public function getChatId()
     {
+        session_write_close(); // Lepaskan session lock
         try {
             $response = Http::timeout(8)
                 ->get($this->gatewayUrl . '/api/notif/get-chat-id');

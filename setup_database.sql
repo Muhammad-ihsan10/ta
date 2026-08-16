@@ -43,7 +43,8 @@ CREATE TABLE IF NOT EXISTS `gps_data` (
   `hdop`      DOUBLE          NULL,
   `maps_url`  VARCHAR(500)    NULL,
   `timestamp` DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  INDEX `idx_gps_timestamp` (`timestamp` DESC)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
@@ -62,7 +63,8 @@ CREATE TABLE IF NOT EXISTS `mpu_data` (
   `acc_z`     DOUBLE          NULL,
   `gerakan`   VARCHAR(20)     NULL,
   `timestamp` DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  INDEX `idx_mpu_timestamp` (`timestamp` DESC)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================

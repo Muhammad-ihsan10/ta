@@ -29,6 +29,7 @@ class DashboardController extends Controller
      */
     public function sensorData()
     {
+        session_write_close(); // Lepaskan session lock agar polling tidak antri
         $gps   = $this->fetchSafe('/api/gps/latest');
         $mpu   = $this->fetchSafe('/api/mpu/latest');
 
@@ -45,6 +46,7 @@ class DashboardController extends Controller
      */
     public function gpsHistory(int $limit = 20)
     {
+        session_write_close();
         $data = $this->fetchSafe("/api/gps/history/{$limit}");
         return response()->json($data);
     }
@@ -55,6 +57,7 @@ class DashboardController extends Controller
      */
     public function mpuHistory(int $limit = 20)
     {
+        session_write_close();
         $data = $this->fetchSafe("/api/mpu/history/{$limit}");
         return response()->json($data);
     }

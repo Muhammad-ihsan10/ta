@@ -1468,7 +1468,11 @@ function dismissToast(toast) {
 // ============================================================
 let countdown = 1;
 
+let isFetching = false;
+
 async function fetchData() {
+    if (isFetching) return; // Mencegah penumpukan request jika server lambat
+    isFetching = true;
     try {
         const res = await fetch('{{ route("sensor.data") }}?t=' + Date.now(), {
             headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
@@ -1479,6 +1483,8 @@ async function fetchData() {
         updateMpu(data.mpu);
     } catch (e) {
         console.warn('Fetch error:', e.message);
+    } finally {
+        isFetching = false;
     }
 }
 

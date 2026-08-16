@@ -302,6 +302,8 @@ void setup() {
     Serial.println("WiFi Terhubung!");
     Serial.print("IP Address: ");
     Serial.println(WiFi.localIP());
+    // Aktifkan auto-reconnect bawaan ESP32 agar koneksi stabil
+    WiFi.setAutoReconnect(true);
   } else {
     Serial.println();
     Serial.println("WiFi Tidak Terhubung. Sensor tetap berjalan tanpa pengiriman data.");
@@ -508,21 +510,9 @@ void mqttTask(void * parameter) {
   for (;;) {
     // ---- Auto Reconnect WiFi ----
     if (WiFi.status() != WL_CONNECTED) {
-      Serial.println("[WiFi] Koneksi terputus! Mencoba menghubungkan kembali...");
-      WiFi.disconnect();
-      WiFi.begin();
-      int retry = 0;
-      while (WiFi.status() != WL_CONNECTED && retry < 20) {
-        vTaskDelay(pdMS_TO_TICKS(500));
-        retry++;
-      }
-      if (WiFi.status() == WL_CONNECTED) {
-        Serial.println("[WiFi] Terhubung Kembali! IP: " + WiFi.localIP().toString());
-      } else {
-        Serial.println("[WiFi] Reconnect Gagal.");
-        vTaskDelay(pdMS_TO_TICKS(5000));
-        continue;
-      }
+      Serial.println("[WiFi] Koneksi terputus! Menunggu auto-reconnect bawaan ESP32...");
+      vTaskDelay(pdMS_TO_TICKS(5000));
+      continue;
     }
 
     // ---- Auto Reconnect MQTT ----
