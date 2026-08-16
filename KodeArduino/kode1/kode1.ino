@@ -249,8 +249,8 @@ void setup() {
 
   // ----- Connect WiFi menggunakan WiFiManager -----
   preferences.begin("iot-pasien", false);
-  // Baca IP Mosquitto broker tersimpan, default ke 23.20.74.33
-  mqttBrokerIP = preferences.getString("mqttBroker", "23.20.74.33");
+  // Baca IP Mosquitto broker tersimpan, default ke 3.215.157.94
+  mqttBrokerIP = preferences.getString("mqttBroker", "3.215.157.94");
 
   WiFiManager wm;
 
