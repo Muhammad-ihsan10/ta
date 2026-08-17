@@ -519,8 +519,8 @@
 <aside class="sidebar">
     <div class="sidebar-logo">
         <div class="brand">
-            <div class="brand-icon">
-                <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5.25-7 13-7 13S5 14.25 5 9a7 7 0 0 1 7-7zm0 9.5A2.5 2.5 0 1 0 12 6.5a2.5 2.5 0 0 0 0 5z"/></svg>
+            <div class="brand-icon" style="overflow: hidden; display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 8px; background: transparent;">
+                <img src="/logo-pasien.png" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;">
             </div>
             <div class="brand-text">Monitoring Pasien<span>IoT Realtime System</span></div>
         </div>
