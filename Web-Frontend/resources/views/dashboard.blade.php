@@ -990,19 +990,19 @@
                 </div>
             </div>
 
-            <!-- Status Pasien -->
+            <!-- Status Lansia -->
             <div class="panel">
                 <div class="panel-header">
                     <div class="panel-title">
                         <div class="dot" style="background:#f59e0b"></div>
-                        Status Pasien
+                        Status Lansia
                     </div>
                 </div>
                 <div class="panel-body">
                     <div class="status-pasien">
                         <div class="status-ring diam" id="status-ring">✅</div>
                         <div class="status-text diam" id="status-text">AMAN</div>
-                        <div class="status-desc" id="status-desc">Pasien dalam kondisi aman</div>
+                        <div class="status-desc" id="status-desc">Lansia dalam kondisi aman</div>
                     </div>
                 </div>
             </div>
@@ -1350,7 +1350,7 @@ function updateMpu(d) {
         ring.textContent  = '🚨';
         txt.className     = 'status-text bergerak';
         txt.textContent   = 'JATUH';
-        desc.textContent  = 'Pasien terdeteksi JATUH!';
+        desc.textContent  = 'Lansia terdeteksi JATUH!';
         badge.style.display = 'inline-flex';
 
         // Kirim notifikasi Telegram hanya saat status BARU berubah jadi JATUH
@@ -1364,7 +1364,7 @@ function updateMpu(d) {
         ring.textContent  = '✅';
         txt.className     = 'status-text diam';
         txt.textContent   = 'AMAN';
-        desc.textContent  = 'Pasien dalam kondisi aman';
+        desc.textContent  = 'Lansia dalam kondisi aman';
         badge.style.display = 'none';
         lastStatusJatuh = false;
     }
