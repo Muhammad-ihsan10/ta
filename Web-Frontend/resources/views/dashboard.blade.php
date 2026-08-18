@@ -932,77 +932,6 @@
             </div>
         </div>
 
-        <!-- ===== GPS MAP + INFO ===== -->
-        <div class="panel-row-3">
-            <div class="panel" id="map-panel">
-                <div class="panel-header">
-                    <div class="panel-title">
-                        <div class="dot" style="background:#3b82f6"></div>
-                        Peta Lokasi GPS (BN-220)
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <button id="btn-focus-patient" class="btn-map-control" title="Pusatkan ke Lokasi Pasien">
-                            <span>🎯</span><span class="btn-text"> Pusatkan</span>
-                        </button>
-                        <button id="btn-toggle-center" class="btn-map-control" title="Ikuti GPS Otomatis">
-                            <span>📍</span><span class="btn-text"> Ikuti GPS</span>
-                        </button>
-                        <button id="btn-toggle-3d" class="btn-map-control active" title="Ubah ke 2D/3D">
-                            <span>🌐</span><span class="btn-text"> 3D Mode</span>
-                        </button>
-                        <button id="btn-toggle-size" class="btn-map-control" title="Perbesar Peta">
-                            <span>🔍</span><span class="btn-text"> Perbesar</span>
-                        </button>
-                        <div class="panel-badge" id="map-badge">Menunggu GPS...</div>
-                    </div>
-                </div>
-                <div class="panel-body" style="padding:0.75rem">
-                    <div id="map"></div>
-                    <div class="last-update" id="gps-update">Belum ada data GPS</div>
-                </div>
-            </div>
-
-            <div class="panel">
-                <div class="panel-header">
-                    <div class="panel-title">
-                        <div class="dot" style="background:#3b82f6"></div>
-                        Detail GPS
-                    </div>
-                </div>
-                <div class="panel-body">
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <div class="info-item-label">Latitude</div>
-                            <div class="info-item-value" id="info-lat" style="color:#60a5fa">–</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-item-label">Longitude</div>
-                            <div class="info-item-value" id="info-lng" style="color:#60a5fa">–</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-item-label">Satelit</div>
-                            <div class="info-item-value" id="info-satelit" style="color:#a78bfa">–</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-item-label">HDOP</div>
-                            <div class="info-item-value" id="info-hdop" style="color:#a78bfa">–</div>
-                        </div>
-                    </div>
-                    <div style="margin-top:12px">
-                        <div class="info-item" style="text-align:center">
-                            <div class="info-item-label">Google Maps</div>
-                            <div id="info-maps">
-                                <a id="maps-link" href="#" target="_blank"
-                                   style="color:#60a5fa;font-size:0.82rem;text-decoration:none;font-weight:600">
-                                    🗺️ Buka di Google Maps
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- ===== SUHU + MPU + STATUS ===== -->
         <div class="panel-row-three-cols">
 
@@ -1074,6 +1003,77 @@
                         <div class="status-ring diam" id="status-ring">✅</div>
                         <div class="status-text diam" id="status-text">AMAN</div>
                         <div class="status-desc" id="status-desc">Pasien dalam kondisi aman</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== GPS MAP + INFO ===== -->
+        <div class="panel-row-3">
+            <div class="panel" id="map-panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <div class="dot" style="background:#3b82f6"></div>
+                        Peta Lokasi GPS (BN-220)
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <button id="btn-focus-patient" class="btn-map-control" title="Pusatkan ke Lokasi Pasien">
+                            <span>🎯</span><span class="btn-text"> Pusatkan</span>
+                        </button>
+                        <button id="btn-toggle-center" class="btn-map-control" title="Ikuti GPS Otomatis">
+                            <span>📍</span><span class="btn-text"> Ikuti GPS</span>
+                        </button>
+                        <button id="btn-toggle-3d" class="btn-map-control active" title="Ubah ke 2D/3D">
+                            <span>🌐</span><span class="btn-text"> 3D Mode</span>
+                        </button>
+                        <button id="btn-toggle-size" class="btn-map-control" title="Perbesar Peta">
+                            <span>🔍</span><span class="btn-text"> Perbesar</span>
+                        </button>
+                        <div class="panel-badge" id="map-badge">Menunggu GPS...</div>
+                    </div>
+                </div>
+                <div class="panel-body" style="padding:0.75rem">
+                    <div id="map"></div>
+                    <div class="last-update" id="gps-update">Belum ada data GPS</div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <div class="dot" style="background:#3b82f6"></div>
+                        Detail GPS
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-item-label">Latitude</div>
+                            <div class="info-item-value" id="info-lat" style="color:#60a5fa">–</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-item-label">Longitude</div>
+                            <div class="info-item-value" id="info-lng" style="color:#60a5fa">–</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-item-label">Satelit</div>
+                            <div class="info-item-value" id="info-satelit" style="color:#a78bfa">–</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-item-label">HDOP</div>
+                            <div class="info-item-value" id="info-hdop" style="color:#a78bfa">–</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:12px">
+                        <div class="info-item" style="text-align:center">
+                            <div class="info-item-label">Google Maps</div>
+                            <div id="info-maps">
+                                <a id="maps-link" href="#" target="_blank"
+                                   style="color:#60a5fa;font-size:0.82rem;text-decoration:none;font-weight:600">
+                                    🗺️ Buka di Google Maps
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
