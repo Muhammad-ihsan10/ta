@@ -30,6 +30,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/history',   [DashboardController::class, 'history'])->name('history');
+    Route::get('/history/export',       [DashboardController::class, 'export'])->name('history.export');
 
     // AJAX API proxy endpoints
     Route::get('/sensor-data',          [DashboardController::class, 'sensorData'])->name('sensor.data');
