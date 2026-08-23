@@ -1227,10 +1227,6 @@ function updateMpu(d) {
     const isJatuh = (rawGerakan === 'JATUH' || rawGerakan === 'BERGERAK');
     const statusText = isJatuh ? 'JATUH' : 'AMAN';
 
-    document.getElementById('acc-x-val').textContent = ax.toFixed(4);
-    document.getElementById('acc-y-val').textContent = ay.toFixed(4);
-    document.getElementById('acc-z-val').textContent = az.toFixed(4);
-    document.getElementById('acc-total-val').textContent = total.toFixed(4);
     const elAccX = document.getElementById('acc-x-val');
     if (elAccX) elAccX.textContent = ax.toFixed(4);
     const elAccY = document.getElementById('acc-y-val');
@@ -1242,9 +1238,6 @@ function updateMpu(d) {
 
     // Bar widths: map -2..2 → 0..100%
     const toBar = v => ((v + 2) / 4 * 100).toFixed(1) + '%';
-    document.getElementById('bar-x').style.width = toBar(ax);
-    document.getElementById('bar-y').style.width = toBar(ay);
-    document.getElementById('bar-z').style.width = toBar(az);
     const elBarX = document.getElementById('bar-x');
     if (elBarX) elBarX.style.width = toBar(ax);
     const elBarY = document.getElementById('bar-y');
@@ -1253,12 +1246,10 @@ function updateMpu(d) {
     if (elBarZ) elBarZ.style.width = toBar(az);
 
     // Total bar: 0..3 → 0..100%
-    document.getElementById('bar-total').style.width = Math.min((total / 3) * 100, 100).toFixed(1) + '%';
     const elBarTotal = document.getElementById('bar-total');
     if (elBarTotal) elBarTotal.style.width = Math.min((total / 3) * 100, 100).toFixed(1) + '%';
 
     // Stat card
-    document.getElementById('stat-gerakan').textContent    = statusText;
     const elStatGerakan = document.getElementById('stat-gerakan');
     if (elStatGerakan) elStatGerakan.textContent = statusText;
 
@@ -1269,12 +1260,6 @@ function updateMpu(d) {
     const badge = document.getElementById('fall-alert-badge');
 
     if (isJatuh) {
-        ring.className    = 'status-ring bergerak';
-        ring.textContent  = '🚨';
-        txt.className     = 'status-text bergerak';
-        txt.textContent   = 'JATUH';
-        desc.textContent  = 'Lansia terdeteksi JATUH!';
-        badge.style.display = 'inline-flex';
         if (ring) {
             ring.className    = 'status-ring bergerak';
             ring.textContent  = '🚨';
@@ -1293,12 +1278,6 @@ function updateMpu(d) {
         }
         lastStatusJatuh = true;
     } else {
-        ring.className    = 'status-ring diam';
-        ring.textContent  = '✅';
-        txt.className     = 'status-text diam';
-        txt.textContent   = 'AMAN';
-        desc.textContent  = 'Lansia dalam kondisi aman';
-        badge.style.display = 'none';
         if (ring) {
             ring.className    = 'status-ring diam';
             ring.textContent  = '✅';
@@ -1313,7 +1292,6 @@ function updateMpu(d) {
     }
 
     const ts = d?.timestamp ? new Date(d.timestamp).toLocaleString('id-ID') : '–';
-    document.getElementById('mpu-update').textContent = 'Update: ' + ts;
     const elMpuUpdate = document.getElementById('mpu-update');
     if (elMpuUpdate) elMpuUpdate.textContent = 'Update: ' + ts;
 }
