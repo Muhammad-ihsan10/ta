@@ -1,5 +1,9 @@
 ini untuk laravel
 php artisan serve --host=0.0.0.0 --port=8000
+---------------------------------------------
+git add .
+git commit -m "."
+git push -u origin main
 
 
 -----------------------

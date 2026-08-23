@@ -1019,39 +1019,41 @@
 
 <script>
 // ============================================================
-// PETA MAPLIBRE — menggunakan OpenStreetMap raster tiles
+// PETA MAPLIBRE — CartoDB Voyager raster tiles (tajam, reliable)
 // ============================================================
 const MAPTILER_KEY = "{{ env('MAPTILER_API_KEY', '') }}";
 
-// Style inline OSM raster tiles (selalu tersedia, tanpa API key)
-const osmStyle = {
+// CartoDB Voyager @2x tiles: tajam, 4 server, tidak rate-limited, gratis
+const baseStyle = {
     version: 8,
+    glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
     sources: {
-        'osm-tiles': {
+        'carto-tiles': {
             type: 'raster',
             tiles: [
-                'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
+                'https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
+                'https://c.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
+                'https://d.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png'
             ],
-            tileSize: 256,
-            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            tileSize: 512,
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>',
             maxzoom: 19
         }
     },
     layers: [
         {
-            id: 'osm-layer',
+            id: 'carto-layer',
             type: 'raster',
-            source: 'osm-tiles',
+            source: 'carto-tiles',
             minzoom: 0,
-            maxzoom: 19
+            maxzoom: 22
         }
     ]
 };
 
 // Jika ada MapTiler API key, gunakan MapTiler (vector tiles, support 3D)
-let mapStyle = osmStyle;
+let mapStyle = baseStyle;
 if (MAPTILER_KEY) {
     mapStyle = `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_KEY}`;
 }
