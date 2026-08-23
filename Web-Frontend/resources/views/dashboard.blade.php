@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard – Monitoring Pasien IoT</title>
+    <title>Dashboard | Monitoring Pasien IoT</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -880,13 +880,10 @@
                     <line x1="3" y1="18" x2="21" y2="18"></line>
                 </svg>
             </button>
-            <div class="topbar-title">Dashboard <span>/ Monitoring Real-Time</span></div>
+            <div class="topbar-title">Dashboard</div>
         </div>
         <div class="status-bar">
             <span class="status-dot"></span>
-            <span id="live-clock">--:--:--</span>
-            &nbsp;|&nbsp;
-            Auto-refresh: <span id="countdown">2s</span>
             &nbsp;
             <span id="fall-alert-badge" style="display:none" class="notif-badge">
                 <span class="dot-red"></span> JATUH TERDETEKSI
@@ -920,7 +917,6 @@
                 </div>
                 <div class="stat-label">Status Jatuh</div>
                 <div class="stat-value" id="stat-gerakan" style="font-size:1rem">–</div>
-                <div class="stat-sub" id="stat-acc-total">Total Acc: –</div>
             </div>
             <div class="stat-card" style="--card-accent:#8b5cf6">
                 <div class="stat-icon" style="background:#8b5cf6">
@@ -928,13 +924,79 @@
                 </div>
                 <div class="stat-label">Satelit GPS</div>
                 <div class="stat-value" id="stat-satelit" style="color:#a78bfa">–</div>
-                <div class="stat-sub" id="stat-hdop">HDOP: –</div>
             </div>
         </div>
 
-        <!-- ===== SUHU + MPU + STATUS ===== -->
-        <div class="panel-row-three-cols">
+        <!-- ===== GPS MAP + INFO ===== -->
+        <div class="panel-row-3">
+            <div class="panel" id="map-panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <div class="dot" style="background:#3b82f6"></div>
+                        Peta Lokasi GPS (BN-220)
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <button id="btn-focus-patient" class="btn-map-control" title="Pusatkan ke Lokasi Pasien">
+                            <span>🎯</span><span class="btn-text"> Pusatkan</span>
+                        </button>
+                        <button id="btn-toggle-center" class="btn-map-control" title="Ikuti GPS Otomatis">
+                            <span>📍</span><span class="btn-text"> Ikuti GPS</span>
+                        </button>
+                        <button id="btn-toggle-3d" class="btn-map-control active" title="Ubah ke 2D/3D">
+                            <span>🌐</span><span class="btn-text"> 3D Mode</span>
+                        </button>
+                        <button id="btn-toggle-size" class="btn-map-control" title="Perbesar Peta">
+                            <span>🔍</span><span class="btn-text"> Perbesar</span>
+                        </button>
+                        <div class="panel-badge" id="map-badge">Menunggu GPS...</div>
+                    </div>
+                </div>
+                <div class="panel-body" style="padding:0.75rem">
+                    <div id="map"></div>
+                    <div class="last-update" id="gps-update">Belum ada data GPS</div>
+                </div>
+            </div>
 
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <div class="dot" style="background:#3b82f6"></div>
+                        Detail GPS
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-item-label">Latitude</div>
+                            <div class="info-item-value" id="info-lat" style="color:#60a5fa">–</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-item-label">Longitude</div>
+                            <div class="info-item-value" id="info-lng" style="color:#60a5fa">–</div>
+                        </div>
+                        <div class="info-item" style="grid-column: span 2;">
+                            <div class="info-item-label">Satelit</div>
+                            <div class="info-item-value" id="info-satelit" style="color:#a78bfa">–</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:12px">
+                        <div class="info-item" style="text-align:center">
+                            <div class="info-item-label">Google Maps</div>
+                            <div id="info-maps">
+                                <a id="maps-link" href="#"
+                                   onclick="openMaps(event)"
+                                   style="color:#60a5fa;font-size:0.82rem;text-decoration:none;font-weight:600">
+                                    🗺️ Buka di Google Maps
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== MPU + STATUS ===== -->
+        <div class="panel-row-three-cols">
 
             <!-- MPU Bars -->
             <div class="panel">
@@ -1003,77 +1065,6 @@
                         <div class="status-ring diam" id="status-ring">✅</div>
                         <div class="status-text diam" id="status-text">AMAN</div>
                         <div class="status-desc" id="status-desc">Lansia dalam kondisi aman</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ===== GPS MAP + INFO ===== -->
-        <div class="panel-row-3">
-            <div class="panel" id="map-panel">
-                <div class="panel-header">
-                    <div class="panel-title">
-                        <div class="dot" style="background:#3b82f6"></div>
-                        Peta Lokasi GPS (BN-220)
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <button id="btn-focus-patient" class="btn-map-control" title="Pusatkan ke Lokasi Pasien">
-                            <span>🎯</span><span class="btn-text"> Pusatkan</span>
-                        </button>
-                        <button id="btn-toggle-center" class="btn-map-control" title="Ikuti GPS Otomatis">
-                            <span>📍</span><span class="btn-text"> Ikuti GPS</span>
-                        </button>
-                        <button id="btn-toggle-3d" class="btn-map-control active" title="Ubah ke 2D/3D">
-                            <span>🌐</span><span class="btn-text"> 3D Mode</span>
-                        </button>
-                        <button id="btn-toggle-size" class="btn-map-control" title="Perbesar Peta">
-                            <span>🔍</span><span class="btn-text"> Perbesar</span>
-                        </button>
-                        <div class="panel-badge" id="map-badge">Menunggu GPS...</div>
-                    </div>
-                </div>
-                <div class="panel-body" style="padding:0.75rem">
-                    <div id="map"></div>
-                    <div class="last-update" id="gps-update">Belum ada data GPS</div>
-                </div>
-            </div>
-
-            <div class="panel">
-                <div class="panel-header">
-                    <div class="panel-title">
-                        <div class="dot" style="background:#3b82f6"></div>
-                        Detail GPS
-                    </div>
-                </div>
-                <div class="panel-body">
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <div class="info-item-label">Latitude</div>
-                            <div class="info-item-value" id="info-lat" style="color:#60a5fa">–</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-item-label">Longitude</div>
-                            <div class="info-item-value" id="info-lng" style="color:#60a5fa">–</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-item-label">Satelit</div>
-                            <div class="info-item-value" id="info-satelit" style="color:#a78bfa">–</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-item-label">HDOP</div>
-                            <div class="info-item-value" id="info-hdop" style="color:#a78bfa">–</div>
-                        </div>
-                    </div>
-                    <div style="margin-top:12px">
-                        <div class="info-item" style="text-align:center">
-                            <div class="info-item-label">Google Maps</div>
-                            <div id="info-maps">
-                                <a id="maps-link" href="#" target="_blank"
-                                   style="color:#60a5fa;font-size:0.82rem;text-decoration:none;font-weight:600">
-                                    🗺️ Buka di Google Maps
-                                </a>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -1187,6 +1178,19 @@ let isAutoCenter = false; // Bawaan mati agar pengguna bisa menjelajahi peta tan
 let is3D = true;          // Bawaan 3D aktif
 let isMaximized = false;
 let firstGpsLoad = true;
+let currentMapsUrl = null; // URL Google Maps terkini
+
+// Fungsi membuka Google Maps — fix agar link selalu bisa diklik
+function openMaps(e) {
+    e.preventDefault();
+    if (currentMapsUrl && currentMapsUrl !== '#') {
+        window.open(currentMapsUrl, '_blank', 'noopener,noreferrer');
+    } else {
+        // Fallback: buka Google Maps dengan koordinat saat ini
+        const [lng, lat] = currentCoords;
+        window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank', 'noopener,noreferrer');
+    }
+}
 
 // Tombol Pusatkan ke Pasien
 document.getElementById('btn-focus-patient').addEventListener('click', function() {
@@ -1245,15 +1249,8 @@ document.getElementById('btn-toggle-size').addEventListener('click', function() 
     }, 200);
 });
 
-// ============================================================
-// CLOCK
-// ============================================================
-function updateClock() {
-    document.getElementById('live-clock').textContent =
-        new Date().toLocaleTimeString('id-ID');
-}
-setInterval(updateClock, 1000);
-updateClock();
+
+
 
 
 
@@ -1277,18 +1274,18 @@ function updateGps(d) {
     const lng = d.longitude?.toFixed(6) ?? '–';
     const sat = d.satelit ?? '–';
     const hdop = d.hdop?.toFixed(2) ?? '–';
-    const url  = d.mapsUrl ?? '#';
+    const url  = d.mapsUrl ?? null;
+
+    // Simpan URL maps ke variabel global agar bisa dibuka via openMaps()
+    currentMapsUrl = url;
 
     document.getElementById('stat-lat').textContent     = lat;
     document.getElementById('stat-lng').textContent     = 'Longitude: ' + lng;
     document.getElementById('stat-satelit').textContent = sat;
-    document.getElementById('stat-hdop').textContent    = 'HDOP: ' + hdop;
 
     document.getElementById('info-lat').textContent     = lat;
     document.getElementById('info-lng').textContent     = lng;
     document.getElementById('info-satelit').textContent = sat;
-    document.getElementById('info-hdop').textContent    = hdop;
-    document.getElementById('maps-link').href           = url;
     document.getElementById('map-badge').textContent    = `${sat} satelit`;
 
     if (d.latitude && d.longitude) {
@@ -1337,7 +1334,6 @@ function updateMpu(d) {
 
     // Stat card
     document.getElementById('stat-gerakan').textContent    = statusText;
-    document.getElementById('stat-acc-total').textContent  = 'Total Acc: ' + total.toFixed(4);
 
     // Status ring
     const ring = document.getElementById('status-ring');
@@ -1466,8 +1462,6 @@ function dismissToast(toast) {
 // ============================================================
 // POLLING REAL-TIME
 // ============================================================
-let countdown = 1;
-
 let isFetching = false;
 
 async function fetchData() {
@@ -1488,15 +1482,8 @@ async function fetchData() {
     }
 }
 
-// Countdown display
-setInterval(() => {
-    countdown--;
-    if (countdown <= 0) {
-        countdown = 1;
-        fetchData();
-    }
-    document.getElementById('countdown').textContent = countdown + 's';
-}, 1000);
+// Polling setiap 1 detik
+setInterval(fetchData, 1000);
 
 // Menu Toggle JS for sliding sidebar drawer
 const menuToggle = document.getElementById('menu-toggle');

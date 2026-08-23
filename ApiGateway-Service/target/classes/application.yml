@@ -23,15 +23,15 @@ spring:
           predicates:
             - Path=/api/gps/**
 
-        - id: suhu-service
-          uri: lb://SUHU-TUBUH-SERVICE
-          predicates:
-            - Path=/api/suhu/**
-
         - id: mpu-service
           uri: lb://MPU-SERVICE
           predicates:
             - Path=/api/mpu/**
+
+        - id: notiftele-service
+          uri: lb://NOTIFTELE-SERVICE
+          predicates:
+            - Path=/api/notif/**
 
 eureka:
   client:
