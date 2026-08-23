@@ -7,9 +7,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- MapLibre GL JS -->
-    <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
-    <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
+    <!-- Leaflet Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -703,7 +703,8 @@
         }
 
         /* ===================== MAPBOX/MAPLIBRE BACK ===================== */
-        .mapboxgl-map, .maplibregl-map { background: #0f1525; }
+        .mapboxgl-map, .maplibregl-map, .leaflet-container { background: #0f1525; }
+        .leaflet-div-icon { background: transparent !important; border: none !important; }
 
         /* ===================== TOAST NOTIFIKASI ===================== */
         #toast-container {
@@ -942,8 +943,8 @@
                         <button id="btn-toggle-center" class="btn-map-control" title="Ikuti GPS Otomatis">
                             <span>📍</span><span class="btn-text"> Ikuti GPS</span>
                         </button>
-                        <button id="btn-toggle-3d" class="btn-map-control active" title="Ubah ke 2D/3D">
-                            <span>🌐</span><span class="btn-text"> 3D Mode</span>
+                        <button id="btn-toggle-3d" class="btn-map-control" title="Ubah Tampilan Peta">
+                            <span>🌐</span><span class="btn-text"> Satelit</span>
                         </button>
                         <button id="btn-toggle-size" class="btn-map-control" title="Perbesar Peta">
                             <span>🔍</span><span class="btn-text"> Perbesar</span>
@@ -1019,124 +1020,49 @@
 
 <script>
 // ============================================================
-// PETA MAPLIBRE — Bulletproof: OpenFreeMap + fallback + auto-resize
+// PETA LEAFLET — Menggunakan Google Maps Tiles
 // ============================================================
-const MAPTILER_KEY = "{{ env('MAPTILER_API_KEY', '') }}";
+const defaultCoords = [-0.932273, 100.427054]; // [lat, lng]
+let currentCoords = defaultCoords; // Simpan dalam format [lat, lng] untuk Leaflet
 
-// Fallback raster style jika vector gagal (CartoDB Voyager @2x, 4 server)
-const rasterFallbackStyle = {
-    version: 8,
-    sources: {
-        'carto-tiles': {
-            type: 'raster',
-            tiles: [
-                'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
-                'https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
-                'https://c.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
-                'https://d.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png'
-            ],
-            tileSize: 512,
-            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/attributions">CARTO</a>',
-            maxzoom: 19
-        }
-    },
-    layers: [{ id: 'carto-layer', type: 'raster', source: 'carto-tiles', minzoom: 0, maxzoom: 22 }]
-};
+// Layer Google Maps (Roadmap / Jalan)
+const googleRoadmap = L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+    maxZoom: 22,
+    attribution: '© Google'
+});
 
-// Pilih style utama
-let mapStyle;
-if (MAPTILER_KEY) {
-    // MapTiler jika ada API key (vector tiles, support 3D)
-    mapStyle = `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_KEY}`;
-} else {
-    // OpenFreeMap: vector tiles gratis, reliable, tidak rate-limited
-    mapStyle = 'https://tiles.openfreemap.org/styles/liberty';
-}
+// Layer Google Satellite (Hybrid / Satelit dengan label)
+const googleHybrid = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+    maxZoom: 22,
+    attribution: '© Google'
+});
 
-const defaultCoords = [100.427054, -0.932273]; // [lng, lat]
-let currentCoords = defaultCoords;
-let mapLoaded = false;
-
-const map = new maplibregl.Map({
-    container: 'map',
-    style: mapStyle,
+// Inisialisasi peta Leaflet dengan Google Maps Roadmap sebagai default
+const map = L.map('map', {
     center: defaultCoords,
     zoom: 16,
-    pitch: 45,
-    bearing: -17,
-    antialias: true,
-    attributionControl: true
+    layers: [googleRoadmap],
+    zoomControl: false // Kita custom posisinya di top-right
 });
 
-// ── Fallback: jika style utama gagal load, switch ke CartoDB raster ──
-map.on('error', function(e) {
-    if (!mapLoaded) {
-        console.warn('[MAP] Style gagal, switch ke raster fallback:', e.error?.message);
-        try { map.setStyle(rasterFallbackStyle); } catch(err) {}
-    }
+// Tambahkan kontrol zoom di top-right
+L.control.zoom({ position: 'topright' }).addTo(map);
+
+// Custom marker dengan divIcon (mereset background default leaflet agar transparan)
+const customIcon = L.divIcon({
+    className: 'custom-marker-wrapper',
+    html: '<div class="custom-marker"><span>🚗</span></div>',
+    iconSize: [32, 32],
+    iconAnchor: [16, 16],
+    popupAnchor: [0, -16]
 });
 
-// ── Force resize multiple times — fix black map on refresh ──
-function safeResize() {
-    try { map.resize(); } catch(e) {}
-}
-
-map.on('load', function() {
-    mapLoaded = true;
-    safeResize();
-
-    // Coba tambah 3D buildings (vector tiles)
-    try {
-        const sources = map.getStyle().sources;
-        let srcName = null;
-        for (let key in sources) {
-            if (sources[key].type === 'vector') { srcName = key; break; }
-        }
-        if (srcName) {
-            map.addLayer({
-                id: '3d-buildings', source: srcName, 'source-layer': 'building',
-                type: 'fill-extrusion', minzoom: 15,
-                paint: {
-                    'fill-extrusion-color': '#aaa',
-                    'fill-extrusion-height': ['interpolate', ['linear'], ['zoom'], 15, 0, 15.05, ['coalesce', ['get', 'render_height'], ['get', 'height'], 10]],
-                    'fill-extrusion-base': ['interpolate', ['linear'], ['zoom'], 15, 0, 15.05, ['coalesce', ['get', 'render_min_height'], ['get', 'min_height'], 0]],
-                    'fill-extrusion-opacity': 0.6
-                }
-            });
-        }
-    } catch(e) { console.log('3D buildings skip:', e.message); }
-});
-
-// Multiple resize: pastikan tiles render walaupun layout belum stabil saat load
-setTimeout(safeResize, 100);
-setTimeout(safeResize, 400);
-setTimeout(safeResize, 1000);
-
-// Resize saat window selesai load (jika script diparse sebelum layout settle)
-window.addEventListener('load', safeResize);
-// Resize juga saat window resize (responsive)
-window.addEventListener('resize', safeResize);
-
-// Tambah kontrol navigasi
-map.addControl(new maplibregl.NavigationControl(), 'top-right');
-
-// Custom marker pasien
-const markerEl = document.createElement('div');
-markerEl.className = 'custom-marker';
-markerEl.innerHTML = '<span>🚗</span>';
-
-let marker = new maplibregl.Marker(markerEl)
-    .setLngLat(defaultCoords)
-    .addTo(map);
-
-// Popup marker
-const popup = new maplibregl.Popup({ offset: 25 })
-    .setHTML('<b>Posisi Pasien</b>');
-marker.setPopup(popup);
+let marker = L.marker(defaultCoords, { icon: customIcon }).addTo(map);
+marker.bindPopup('<b>Posisi Pasien</b>');
 
 // State kontrol peta
 let isAutoCenter = false; // Bawaan mati agar pengguna bisa menjelajahi peta tanpa digeser otomatis
-let is3D = true;          // Bawaan 3D aktif
+let is3D = false;          // Satelit mode (false = map biasa, true = satelit)
 let isMaximized = false;
 let firstGpsLoad = true;
 let currentMapsUrl = null; // URL Google Maps terkini
@@ -1148,18 +1074,13 @@ function openMaps(e) {
         window.open(currentMapsUrl, '_blank', 'noopener,noreferrer');
     } else {
         // Fallback: buka Google Maps dengan koordinat saat ini
-        const [lng, lat] = currentCoords;
-        window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank', 'noopener,noreferrer');
+        window.open(`https://www.google.com/maps?q=${currentCoords[0]},${currentCoords[1]}`, '_blank', 'noopener,noreferrer');
     }
 }
 
 // Tombol Pusatkan ke Pasien
 document.getElementById('btn-focus-patient').addEventListener('click', function() {
-    map.flyTo({
-        center: currentCoords,
-        zoom: 17,
-        essential: true
-    });
+    map.setView(currentCoords, 17);
 });
 
 // Toggle Auto Center
@@ -1168,27 +1089,23 @@ document.getElementById('btn-toggle-center').addEventListener('click', function(
     this.classList.toggle('active', isAutoCenter);
 });
 
-// Toggle 2D / 3D Mode
+// Toggle Map Biasa / Satelit
 document.getElementById('btn-toggle-3d').addEventListener('click', function() {
     is3D = !is3D;
     this.classList.toggle('active', is3D);
     const btnText = this.querySelector('.btn-text');
     if (btnText) {
-        btnText.textContent = is3D ? ' 3D Mode' : ' 2D Mode';
+        btnText.textContent = is3D ? ' Map Biasa' : ' Satelit';
     } else {
-        this.innerHTML = is3D ? '<span>🌐</span> 3D Mode' : '<span>🗺️</span> 2D Mode';
+        this.innerHTML = is3D ? '<span>🌐</span> Map Biasa' : '<span>🌐</span> Satelit';
     }
     
-    // Sesuaikan kemiringan peta
-    map.easeTo({
-        pitch: is3D ? 45 : 0,
-        bearing: is3D ? -17 : 0,
-        duration: 800
-    });
-    
-    // Tampilkan / sembunyikan gedung 3D
-    if (map.getLayer('3d-buildings')) {
-        map.setLayoutProperty('3d-buildings', 'visibility', is3D ? 'visible' : 'none');
+    if (is3D) {
+        map.removeLayer(googleRoadmap);
+        map.addLayer(googleHybrid);
+    } else {
+        map.removeLayer(googleHybrid);
+        map.addLayer(googleRoadmap);
     }
 });
 
@@ -1206,9 +1123,14 @@ document.getElementById('btn-toggle-size').addEventListener('click', function() 
     }
     
     setTimeout(() => {
-        map.resize();
+        map.invalidateSize();
     }, 200);
 });
+
+// Fix rendering map leaflet saat pertama kali load
+setTimeout(() => {
+    map.invalidateSize();
+}, 200);
 
 
 
@@ -1250,10 +1172,10 @@ function updateGps(d) {
     document.getElementById('map-badge').textContent    = `${sat} satelit`;
 
     if (d.latitude && d.longitude) {
-        currentCoords = [d.longitude, d.latitude]; // [lng, lat]
+        currentCoords = [d.latitude, d.longitude]; // [lat, lng] untuk Leaflet
         
-        marker.setLngLat(currentCoords);
-        marker.getPopup().setHTML(`<b>Posisi Pasien</b><br>Lat: ${lat}<br>Lng: ${lng}`);
+        marker.setLatLng(currentCoords);
+        marker.getPopup().setContent(`<b>Posisi Pasien</b><br>Lat: ${lat}<br>Lng: ${lng}`);
 
         // Update href Google Maps link langsung dengan koordinat real-time
         const mapsUrl = d.mapsUrl || `https://www.google.com/maps?q=${d.latitude},${d.longitude}`;
@@ -1261,9 +1183,7 @@ function updateGps(d) {
         if (mapsLinkEl) mapsLinkEl.href = mapsUrl;
 
         if (isAutoCenter || firstGpsLoad) {
-            map.easeTo({
-                center: currentCoords
-            });
+            map.setView(currentCoords, 17);
             firstGpsLoad = false;
         }
     }
