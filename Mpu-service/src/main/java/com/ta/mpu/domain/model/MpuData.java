@@ -15,13 +15,18 @@ public class MpuData {
 
     public MpuData(Long id, Acceleration acceleration, LocalDateTime timestamp) {
         this(id, acceleration, null, timestamp);
-    }
-
-    public MpuData(Long id, Acceleration acceleration, MovementStatus movementStatus, LocalDateTime timestamp) {
         this.id = id;
         this.acceleration = acceleration != null ? acceleration : new Acceleration(0.0, 0.0, 0.0);
         this.movementStatus = this.acceleration.determineMovementStatus();
+        this.timestamp = timestamp != null ? timestamp : LocalDateTime.now();
+    }
+
+    public MpuData(Long id, Acceleration acceleration, MovementStatus movementStatus, LocalDateTime timestamp) {
+    public MpuData(Long id, Acceleration acceleration, MovementStatus status, LocalDateTime timestamp) {
+        this.id = id;
+        this.acceleration = acceleration != null ? acceleration : new Acceleration(0.0, 0.0, 0.0);
         this.movementStatus = movementStatus != null ? movementStatus : this.acceleration.determineMovementStatus();
+        this.movementStatus = status != null ? status : this.acceleration.determineMovementStatus();
         this.timestamp = timestamp != null ? timestamp : LocalDateTime.now();
     }
 }

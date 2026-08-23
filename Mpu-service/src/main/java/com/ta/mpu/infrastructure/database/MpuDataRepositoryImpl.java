@@ -61,7 +61,6 @@ public class MpuDataRepositoryImpl implements MpuDataRepository {
 
     private MpuData toDomainEntity(MpuJpaEntity jpa) {
         Acceleration acceleration = new Acceleration(jpa.getAccX(), jpa.getAccY(), jpa.getAccZ());
-        return new MpuData(jpa.getId(), acceleration, jpa.getTimestamp());
         MovementStatus status = null;
         if (jpa.getGerakan() != null) {
             try {
