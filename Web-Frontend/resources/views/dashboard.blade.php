@@ -1019,14 +1019,13 @@
 
 <script>
 // ============================================================
-// PETA MAPLIBRE — CartoDB Voyager raster tiles (tajam, reliable)
+// PETA MAPLIBRE — Bulletproof: OpenFreeMap + fallback + auto-resize
 // ============================================================
 const MAPTILER_KEY = "{{ env('MAPTILER_API_KEY', '') }}";
 
-// CartoDB Voyager @2x tiles: tajam, 4 server, tidak rate-limited, gratis
-const baseStyle = {
+// Fallback raster style jika vector gagal (CartoDB Voyager @2x, 4 server)
+const rasterFallbackStyle = {
     version: 8,
-    glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
     sources: {
         'carto-tiles': {
             type: 'raster',
@@ -1037,44 +1036,91 @@ const baseStyle = {
                 'https://d.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png'
             ],
             tileSize: 512,
-            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>',
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/attributions">CARTO</a>',
             maxzoom: 19
         }
     },
-    layers: [
-        {
-            id: 'carto-layer',
-            type: 'raster',
-            source: 'carto-tiles',
-            minzoom: 0,
-            maxzoom: 22
-        }
-    ]
+    layers: [{ id: 'carto-layer', type: 'raster', source: 'carto-tiles', minzoom: 0, maxzoom: 22 }]
 };
 
-// Jika ada MapTiler API key, gunakan MapTiler (vector tiles, support 3D)
-let mapStyle = baseStyle;
+// Pilih style utama
+let mapStyle;
 if (MAPTILER_KEY) {
+    // MapTiler jika ada API key (vector tiles, support 3D)
     mapStyle = `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_KEY}`;
+} else {
+    // OpenFreeMap: vector tiles gratis, reliable, tidak rate-limited
+    mapStyle = 'https://tiles.openfreemap.org/styles/liberty';
 }
 
 const defaultCoords = [100.427054, -0.932273]; // [lng, lat]
 let currentCoords = defaultCoords;
+let mapLoaded = false;
 
 const map = new maplibregl.Map({
     container: 'map',
     style: mapStyle,
     center: defaultCoords,
     zoom: 16,
-    pitch: 0,      // OSM raster tidak support 3D pitch secara visual
-    bearing: 0,
-    antialias: true
+    pitch: 45,
+    bearing: -17,
+    antialias: true,
+    attributionControl: true
 });
 
-// Tambah kontrol navigasi (Zoom & Kompas/Tilt)
+// ── Fallback: jika style utama gagal load, switch ke CartoDB raster ──
+map.on('error', function(e) {
+    if (!mapLoaded) {
+        console.warn('[MAP] Style gagal, switch ke raster fallback:', e.error?.message);
+        try { map.setStyle(rasterFallbackStyle); } catch(err) {}
+    }
+});
+
+// ── Force resize multiple times — fix black map on refresh ──
+function safeResize() {
+    try { map.resize(); } catch(e) {}
+}
+
+map.on('load', function() {
+    mapLoaded = true;
+    safeResize();
+
+    // Coba tambah 3D buildings (vector tiles)
+    try {
+        const sources = map.getStyle().sources;
+        let srcName = null;
+        for (let key in sources) {
+            if (sources[key].type === 'vector') { srcName = key; break; }
+        }
+        if (srcName) {
+            map.addLayer({
+                id: '3d-buildings', source: srcName, 'source-layer': 'building',
+                type: 'fill-extrusion', minzoom: 15,
+                paint: {
+                    'fill-extrusion-color': '#aaa',
+                    'fill-extrusion-height': ['interpolate', ['linear'], ['zoom'], 15, 0, 15.05, ['coalesce', ['get', 'render_height'], ['get', 'height'], 10]],
+                    'fill-extrusion-base': ['interpolate', ['linear'], ['zoom'], 15, 0, 15.05, ['coalesce', ['get', 'render_min_height'], ['get', 'min_height'], 0]],
+                    'fill-extrusion-opacity': 0.6
+                }
+            });
+        }
+    } catch(e) { console.log('3D buildings skip:', e.message); }
+});
+
+// Multiple resize: pastikan tiles render walaupun layout belum stabil saat load
+setTimeout(safeResize, 100);
+setTimeout(safeResize, 400);
+setTimeout(safeResize, 1000);
+
+// Resize saat window selesai load (jika script diparse sebelum layout settle)
+window.addEventListener('load', safeResize);
+// Resize juga saat window resize (responsive)
+window.addEventListener('resize', safeResize);
+
+// Tambah kontrol navigasi
 map.addControl(new maplibregl.NavigationControl(), 'top-right');
 
-// Custom marker
+// Custom marker pasien
 const markerEl = document.createElement('div');
 markerEl.className = 'custom-marker';
 markerEl.innerHTML = '<span>🚗</span>';
@@ -1087,48 +1133,6 @@ let marker = new maplibregl.Marker(markerEl)
 const popup = new maplibregl.Popup({ offset: 25 })
     .setHTML('<b>Posisi Pasien</b>');
 marker.setPopup(popup);
-
-// 3D buildings hanya tersedia jika pakai MapTiler vector tiles
-map.on('load', () => {
-    if (MAPTILER_KEY) {
-        try {
-            const sources = map.getStyle().sources;
-            let sourceName = null;
-            for (let key in sources) {
-                if (sources[key].type === 'vector') {
-                    sourceName = key;
-                    break;
-                }
-            }
-            if (sourceName) {
-                map.addLayer({
-                    'id': '3d-buildings',
-                    'source': sourceName,
-                    'source-layer': 'building',
-                    'filter': ['==', 'extrude', 'true'],
-                    'type': 'fill-extrusion',
-                    'minzoom': 15,
-                    'paint': {
-                        'fill-extrusion-color': '#aaa',
-                        'fill-extrusion-height': [
-                            'interpolate', ['linear'], ['zoom'],
-                            15, 0, 15.05,
-                            ['coalesce', ['get', 'render_height'], ['get', 'height'], 10]
-                        ],
-                        'fill-extrusion-base': [
-                            'interpolate', ['linear'], ['zoom'],
-                            15, 0, 15.05,
-                            ['coalesce', ['get', 'render_min_height'], ['get', 'min_height'], 0]
-                        ],
-                        'fill-extrusion-opacity': 0.6
-                    }
-                });
-            }
-        } catch(e) {
-            console.log('3D buildings tidak tersedia:', e.message);
-        }
-    }
-});
 
 // State kontrol peta
 let isAutoCenter = false; // Bawaan mati agar pengguna bisa menjelajahi peta tanpa digeser otomatis
