@@ -1019,14 +1019,39 @@
 
 <script>
 // ============================================================
-// PETA MAPLIBRE (3D & PITCH FIXED)
+// PETA MAPLIBRE — menggunakan OpenStreetMap raster tiles
 // ============================================================
-// Ambil API Key MapTiler jika ada di .env
 const MAPTILER_KEY = "{{ env('MAPTILER_API_KEY', '') }}";
 
-// Gunakan style CartoDB Positron gratis (tanpa key) sebagai default
-// Jika user memasukkan key MapTiler, gunakan style MapTiler Streets
-let mapStyle = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
+// Style inline OSM raster tiles (selalu tersedia, tanpa API key)
+const osmStyle = {
+    version: 8,
+    sources: {
+        'osm-tiles': {
+            type: 'raster',
+            tiles: [
+                'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png'
+            ],
+            tileSize: 256,
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxzoom: 19
+        }
+    },
+    layers: [
+        {
+            id: 'osm-layer',
+            type: 'raster',
+            source: 'osm-tiles',
+            minzoom: 0,
+            maxzoom: 19
+        }
+    ]
+};
+
+// Jika ada MapTiler API key, gunakan MapTiler (vector tiles, support 3D)
+let mapStyle = osmStyle;
 if (MAPTILER_KEY) {
     mapStyle = `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_KEY}`;
 }
@@ -1039,15 +1064,15 @@ const map = new maplibregl.Map({
     style: mapStyle,
     center: defaultCoords,
     zoom: 16,
-    pitch: 45, // Kemiringan awal 3D
-    bearing: -17,
+    pitch: 0,      // OSM raster tidak support 3D pitch secara visual
+    bearing: 0,
     antialias: true
 });
 
 // Tambah kontrol navigasi (Zoom & Kompas/Tilt)
 map.addControl(new maplibregl.NavigationControl(), 'top-right');
 
-// Custom marker mobil
+// Custom marker
 const markerEl = document.createElement('div');
 markerEl.className = 'custom-marker';
 markerEl.innerHTML = '<span>🚗</span>';
@@ -1061,60 +1086,46 @@ const popup = new maplibregl.Popup({ offset: 25 })
     .setHTML('<b>Posisi Pasien</b>');
 marker.setPopup(popup);
 
-// Tambah layer gedung 3D ketika map dimuat
+// 3D buildings hanya tersedia jika pakai MapTiler vector tiles
 map.on('load', () => {
-    // Deteksi source vector yang tersedia secara dinamis
-    const sources = map.getStyle().sources;
-    let sourceName = 'openmaptiles';
-    
-    if (sources.cartodb) {
-        sourceName = 'cartodb';
-    } else if (sources.composite) {
-        sourceName = 'composite';
-    } else if (sources.maptiler_planet) {
-        sourceName = 'maptiler_planet';
-    } else {
-        // Cari source type 'vector' pertama
-        for (let key in sources) {
-            if (sources[key].type === 'vector') {
-                sourceName = key;
-                break;
+    if (MAPTILER_KEY) {
+        try {
+            const sources = map.getStyle().sources;
+            let sourceName = null;
+            for (let key in sources) {
+                if (sources[key].type === 'vector') {
+                    sourceName = key;
+                    break;
+                }
             }
+            if (sourceName) {
+                map.addLayer({
+                    'id': '3d-buildings',
+                    'source': sourceName,
+                    'source-layer': 'building',
+                    'filter': ['==', 'extrude', 'true'],
+                    'type': 'fill-extrusion',
+                    'minzoom': 15,
+                    'paint': {
+                        'fill-extrusion-color': '#aaa',
+                        'fill-extrusion-height': [
+                            'interpolate', ['linear'], ['zoom'],
+                            15, 0, 15.05,
+                            ['coalesce', ['get', 'render_height'], ['get', 'height'], 10]
+                        ],
+                        'fill-extrusion-base': [
+                            'interpolate', ['linear'], ['zoom'],
+                            15, 0, 15.05,
+                            ['coalesce', ['get', 'render_min_height'], ['get', 'min_height'], 0]
+                        ],
+                        'fill-extrusion-opacity': 0.6
+                    }
+                });
+            }
+        } catch(e) {
+            console.log('3D buildings tidak tersedia:', e.message);
         }
     }
-
-    map.addLayer(
-        {
-            'id': '3d-buildings',
-            'source': sourceName,
-            'source-layer': 'building',
-            'filter': ['==', 'extrude', 'true'],
-            'type': 'fill-extrusion',
-            'minzoom': 15,
-            'paint': {
-                'fill-extrusion-color': '#aaa',
-                'fill-extrusion-height': [
-                    'interpolate',
-                    ['linear'],
-                    ['zoom'],
-                    15,
-                    0,
-                    15.05,
-                    ['coalesce', ['get', 'render_height'], ['get', 'height'], 10]
-                ],
-                'fill-extrusion-base': [
-                    'interpolate',
-                    ['linear'],
-                    ['zoom'],
-                    15,
-                    0,
-                    15.05,
-                    ['coalesce', ['get', 'render_min_height'], ['get', 'min_height'], 0]
-                ],
-                'fill-extrusion-opacity': 0.6
-            }
-        }
-    );
 });
 
 // State kontrol peta
