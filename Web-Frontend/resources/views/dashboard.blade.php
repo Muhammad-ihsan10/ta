@@ -983,8 +983,10 @@
                         <div class="info-item" style="text-align:center">
                             <div class="info-item-label">Google Maps</div>
                             <div id="info-maps">
-                                <a id="maps-link" href="#"
-                                   onclick="openMaps(event)"
+                                <a id="maps-link"
+                                   href="https://www.google.com/maps?q=-0.932273,100.427054"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
                                    style="color:#60a5fa;font-size:0.82rem;text-decoration:none;font-weight:600">
                                     🗺️ Buka di Google Maps
                                 </a>
@@ -995,77 +997,19 @@
             </div>
         </div>
 
-        <!-- ===== MPU + STATUS ===== -->
-        <div class="panel-row-three-cols">
-
-            <!-- MPU Bars -->
-            <div class="panel">
-                <div class="panel-header">
-                    <div class="panel-title">
-                        <div class="dot" style="background:#f59e0b"></div>
-                        Akselerometer (MPU6050)
-                    </div>
-                </div>
-                <div class="panel-body">
-                    <div class="mpu-bars">
-                        <div class="mpu-bar-item">
-                            <div class="mpu-bar-label">
-                                <span>Acc X</span>
-                                <span id="acc-x-val">0.0000</span>
-                            </div>
-                            <div class="bar-track">
-                                <div class="bar-fill" id="bar-x" style="width:50%;background:linear-gradient(90deg,#3b82f6,#60a5fa)"></div>
-                            </div>
-                        </div>
-                        <div class="mpu-bar-item">
-                            <div class="mpu-bar-label">
-                                <span>Acc Y</span>
-                                <span id="acc-y-val">0.0000</span>
-                            </div>
-                            <div class="bar-track">
-                                <div class="bar-fill" id="bar-y" style="width:50%;background:linear-gradient(90deg,#8b5cf6,#a78bfa)"></div>
-                            </div>
-                        </div>
-                        <div class="mpu-bar-item">
-                            <div class="mpu-bar-label">
-                                <span>Acc Z</span>
-                                <span id="acc-z-val">0.0000</span>
-                            </div>
-                            <div class="bar-track">
-                                <div class="bar-fill" id="bar-z" style="width:50%;background:linear-gradient(90deg,#06b6d4,#67e8f9)"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border)">
-                        <div class="mpu-bar-label" style="margin-bottom:6px">
-                            <span>Total Akselerasi</span>
-                            <span id="acc-total-val">0.0000</span>
-                        </div>
-                        <div class="bar-track">
-                            <div class="bar-fill" id="bar-total" style="width:30%;background:linear-gradient(90deg,#f59e0b,#fcd34d)"></div>
-                        </div>
-                        <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--muted);margin-top:4px">
-                            <span>0</span><span>Threshold: 2.50</span><span>3.0</span>
-                        </div>
-                    </div>
-                    <div class="last-update" id="mpu-update">Belum ada data MPU</div>
+        <!-- ===== STATUS LANSIA ===== -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <div class="dot" style="background:#f59e0b"></div>
+                    Status Lansia
                 </div>
             </div>
-
-            <!-- Status Lansia -->
-            <div class="panel">
-                <div class="panel-header">
-                    <div class="panel-title">
-                        <div class="dot" style="background:#f59e0b"></div>
-                        Status Lansia
-                    </div>
-                </div>
-                <div class="panel-body">
-                    <div class="status-pasien">
-                        <div class="status-ring diam" id="status-ring">✅</div>
-                        <div class="status-text diam" id="status-text">AMAN</div>
-                        <div class="status-desc" id="status-desc">Lansia dalam kondisi aman</div>
-                    </div>
+            <div class="panel-body">
+                <div class="status-pasien">
+                    <div class="status-ring diam" id="status-ring">✅</div>
+                    <div class="status-text diam" id="status-text">AMAN</div>
+                    <div class="status-desc" id="status-desc">Lansia dalam kondisi aman</div>
                 </div>
             </div>
         </div>
@@ -1293,6 +1237,11 @@ function updateGps(d) {
         
         marker.setLngLat(currentCoords);
         marker.getPopup().setHTML(`<b>Posisi Pasien</b><br>Lat: ${lat}<br>Lng: ${lng}`);
+
+        // Update href Google Maps link langsung dengan koordinat real-time
+        const mapsUrl = d.mapsUrl || `https://www.google.com/maps?q=${d.latitude},${d.longitude}`;
+        const mapsLinkEl = document.getElementById('maps-link');
+        if (mapsLinkEl) mapsLinkEl.href = mapsUrl;
 
         if (isAutoCenter || firstGpsLoad) {
             map.easeTo({
