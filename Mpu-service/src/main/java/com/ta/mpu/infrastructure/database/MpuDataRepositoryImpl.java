@@ -2,6 +2,7 @@ package com.ta.mpu.infrastructure.database;
 
 import com.ta.mpu.domain.model.Acceleration;
 import com.ta.mpu.domain.model.MpuData;
+import com.ta.mpu.domain.model.MovementStatus;
 import com.ta.mpu.domain.repository.MpuDataRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -61,5 +62,14 @@ public class MpuDataRepositoryImpl implements MpuDataRepository {
     private MpuData toDomainEntity(MpuJpaEntity jpa) {
         Acceleration acceleration = new Acceleration(jpa.getAccX(), jpa.getAccY(), jpa.getAccZ());
         return new MpuData(jpa.getId(), acceleration, jpa.getTimestamp());
+        MovementStatus status = null;
+        if (jpa.getGerakan() != null) {
+            try {
+                status = MovementStatus.valueOf(jpa.getGerakan().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                // fallback
+            }
+        }
+        return new MpuData(jpa.getId(), acceleration, status, jpa.getTimestamp());
     }
 }
