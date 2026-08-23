@@ -705,6 +705,27 @@
         /* ===================== MAPBOX/MAPLIBRE BACK ===================== */
         .mapboxgl-map, .maplibregl-map, .leaflet-container { background: #0f1525; }
         .leaflet-div-icon { background: transparent !important; border: none !important; }
+        .map-pin {
+            width: 30px;
+            height: 30px;
+            border-radius: 50% 50% 50% 0;
+            background: #ea4335;
+            position: absolute;
+            transform: rotate(-45deg);
+            left: 50%;
+            top: 50%;
+            margin: -15px 0 0 -15px;
+            box-shadow: -2px 2px 4px rgba(0,0,0,0.4);
+        }
+        .map-pin::after {
+            content: '';
+            width: 12px;
+            height: 12px;
+            margin: 9px 0 0 9px;
+            background: #760c05;
+            position: absolute;
+            border-radius: 50%;
+        }
 
         /* ===================== TOAST NOTIFIKASI ===================== */
         #toast-container {
@@ -1025,15 +1046,17 @@
 const defaultCoords = [-0.932273, 100.427054]; // [lat, lng]
 let currentCoords = defaultCoords; // Simpan dalam format [lat, lng] untuk Leaflet
 
-// Layer Google Maps (Roadmap / Jalan)
-const googleRoadmap = L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+// Layer Google Maps (Roadmap / Jalan) - menggunakan subdomains untuk keandalan maksimal
+const googleRoadmap = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
     maxZoom: 22,
+    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
     attribution: '© Google'
 });
 
 // Layer Google Satellite (Hybrid / Satelit dengan label)
-const googleHybrid = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+const googleHybrid = L.tileLayer('https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
     maxZoom: 22,
+    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
     attribution: '© Google'
 });
 
@@ -1048,13 +1071,13 @@ const map = L.map('map', {
 // Tambahkan kontrol zoom di top-right
 L.control.zoom({ position: 'topright' }).addTo(map);
 
-// Custom marker dengan divIcon (mereset background default leaflet agar transparan)
+// Custom marker dengan divIcon berbentuk Pin Merah Google Maps
 const customIcon = L.divIcon({
     className: 'custom-marker-wrapper',
-    html: '<div class="custom-marker"><span>🚗</span></div>',
-    iconSize: [32, 32],
-    iconAnchor: [16, 16],
-    popupAnchor: [0, -16]
+    html: '<div class="map-pin"></div>',
+    iconSize: [30, 30],
+    iconAnchor: [0, 0], // Anchor di ujung lancip pin
+    popupAnchor: [0, -15]
 });
 
 let marker = L.marker(defaultCoords, { icon: customIcon }).addTo(map);
