@@ -136,23 +136,24 @@ async function handleMpu(payload) {
 
     const totalAcc = Math.abs(accX ?? 0) + Math.abs(accY ?? 0) + Math.abs(accZ ?? 0);
 
-    // Kirim HTTP POST ke API Gateway -> NotifTele-Service secara internal di dalam Docker network
-    try {
-      const gatewayUrl = process.env.API_GATEWAY_URL || 'http://api-gateway:8080';
-      const response = await fetch(`${gatewayUrl}/api/notif/fall`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lat, lng, mapsUrl, totalAcc }),
+    // Kirim HTTP POST ke API Gateway -> NotifTele-Service secara internal di dalam Docker network (Non-blocking)
+    const gatewayUrl = process.env.API_GATEWAY_URL || 'http://api-gateway:8080';
+    fetch(`${gatewayUrl}/api/notif/fall`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lat, lng, mapsUrl, totalAcc }),
+    })
+      .then(res => res.json())
+      .then(resData => {
+        if (resData.success) {
+          log('NOTIF', C.green, `✅ Notifikasi jatuh sukses terkirim ke Telegram via Microservice!`);
+        } else {
+          log('NOTIF', C.yellow, `⚠️ Notifikasi Telegram dilewati/gagal: ${resData.message}`);
+        }
+      })
+      .catch(err => {
+        log('NOTIF', C.red, `❌ Gagal menghubungi NotifTele-Service: ${err.message}`);
       });
-      const resData = await response.json();
-      if (resData.success) {
-        log('NOTIF', C.green, `✅ Notifikasi jatuh sukses terkirim ke Telegram via Microservice!`);
-      } else {
-        log('NOTIF', C.yellow, `⚠️ Notifikasi Telegram dilewati/gagal: ${resData.message}`);
-      }
-    } catch (err) {
-      log('NOTIF', C.red, `❌ Gagal menghubungi NotifTele-Service: ${err.message}`);
-    }
   }
 }
 
