@@ -5,6 +5,7 @@ git add .
 git commit -m "."
 git push -u origin main
 
+git pull  (di terminal ec2)
 
 -----------------------
 
@@ -15,7 +16,7 @@ matikan docker :
 docker-compose stop
 
 liat status docker :
-docker-compose ps
+docker compose ps
 
 --------------------------
 

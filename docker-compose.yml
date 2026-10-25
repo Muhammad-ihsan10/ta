@@ -217,7 +217,12 @@ services:
       - DB_DATABASE=db_auth
       - DB_USERNAME=root
       - DB_PASSWORD=root
+      - SESSION_DRIVER=file
+      - SESSION_LIFETIME=120
+      - CACHE_STORE=file
       - API_GATEWAY_URL=http://api-gateway:8080
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
     volumes:
       - ./Web-Frontend:/var/www
       - /var/www/vendor

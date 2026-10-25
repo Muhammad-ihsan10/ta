@@ -31,5 +31,18 @@ class UserSeeder extends Seeder
                 'updated_at' => now(),
             ]
         );
+
+        // Akun ihsan
+        DB::table('users')->updateOrInsert(
+            ['email' => 'sannz@gmail.com'],
+            [
+                'name'       => 'ihsan',
+                'email'      => 'sannz@gmail.com',
+                'password'   => Hash::make('ihsan1234'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
     }
 }
+

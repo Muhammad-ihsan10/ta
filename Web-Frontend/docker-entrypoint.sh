@@ -24,5 +24,12 @@ done
 echo "==> Running Laravel migrations..."
 php artisan migrate --force
 
+echo "==> Running database seeders..."
+php artisan db:seed --force
+
+echo "==> Clearing and caching config..."
+php artisan config:clear
+php artisan cache:clear
+
 echo "==> Starting PHP-FPM..."
 exec php-fpm
